@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutoriais · CodeNexa Barbearia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#b8863b;        /* âmbar */
+    --primary-foreground:#fff;
+    --accent:#b8863b;
+    --background:#f8f5ef;
+    --card:#ffffff;
+    --muted:#f0ebe1;
+    --muted-foreground:#8a8072;
+    --foreground:#211c14;
+    --border:#e7dfd0;
+    --ring:#c99a4b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Manrope",system-ui,sans-serif;background:var(--background);color:var(--foreground);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  header{background:var(--foreground);color:#fff}
+  .bar{display:flex;align-items:center;gap:26px;padding:18px 0;flex-wrap:wrap}
+  .brand{font-family:"Bebas Neue",sans-serif;font-size:30px;letter-spacing:1.5px}
+  .brand span{color:#e6b15c}
+  .bar nav{display:flex;gap:18px;flex-wrap:wrap}
+  .bar nav a{color:#d9d2c4;text-decoration:none;font-size:14px;font-weight:700}
+  .bar nav a:hover{color:#fff}
+  .hero{background:linear-gradient(135deg,#3a2f1e,#6b4f2a);padding:54px 0}
+  .hero .kicker{font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#e6b15c}
+  .hero h1{font-family:"Bebas Neue",sans-serif;font-size:52px;line-height:1;margin:8px 0 12px;letter-spacing:1px}
+  .hero p{color:#f0e9db;max-width:640px}
+
+  .section{display:grid;grid-template-columns:1fr;gap:18px;padding:38px 0 10px}
+  @media(min-width:720px){.section{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px;text-decoration:none;color:var(--foreground);transition:transform .15s ease,box-shadow .15s ease}
+  .card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(33,28,20,.12);border-color:var(--ring)}
+  .card .ico{width:52px;height:52px;border-radius:14px;background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:24px}
+  .card h3{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:.5px}
+  .card p{font-size:13.5px;color:var(--muted-foreground);flex:1}
+  .card .go{font-size:13px;font-weight:800;color:var(--primary)}
+  .card .go::after{content:" →"}
+
+  .note{display:flex;gap:10px;align-items:flex-start;background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#6b5a2e;margin:28px 0}
+  footer{padding:30px 0 40px;font-size:12px;color:var(--muted-foreground);text-align:center}
+</style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <div class="brand">CODEX<span>NEXA</span> · BARBEARIA</div>
+      <nav>
+        <a href="index.html">Início</a>
+        <a href="agendamento.html">Agendamento</a>
+        <a href="tutoriais.html">Tutoriais</a>
+        <a href="painel-barbeiro.html">Painel do barbeiro</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="kicker">Central de ajuda</div>
+      <h1>Como usar o sistema</h1>
+      <p>Escolha o tutorial certo: aprenda a fazer um agendamento como cliente, a gerenciar a agenda como barbeiro, ou a configurar tudo no seu site.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="section">
+      <a class="card" href="tutoriais/tutorial-cliente.html">
+        <div class="ico">✂️</div>
+        <h3>Tutorial do cliente</h3>
+        <p>Passo a passo de como marcar, confirmar e acompanhar um corte na página de agendamento — com prévia de cada tela.</p>
+        <span class="go">Ver tutorial</span>
+      </a>
+
+      <a class="card" href="tutoriais/tutorial-barbeiro.html">
+        <div class="ico">🧔</div>
+        <h3>Tutorial do barbeiro</h3>
+        <p>Como entrar no painel, consultar a agenda do dia, atualizar o status dos atendimentos e acompanhar o faturamento.</p>
+        <span class="go">Ver tutorial</span>
+      </a>
+
+      <a class="card" href="tutoriais/tutorial-agendamento.html">
+        <div class="ico">⚙️</div>
+        <h3>Tutorial de configuração</h3>
+        <p>Como integrar a página de agendamento no seu site: onde colocar os arquivos, os links e o que cada parte faz.</p>
+        <span class="go">Ver tutorial</span>
+      </a>
+    </div>
+
+    <div class="note">
+      ⚠️ <span>Estes tutoriais descrevem <strong>demonstrações com dados fictícios</strong> para apresentar o funcionamento do sistema. Nenhum dado real é salvo. A versão com banco de dados e salvamento real é a próxima etapa.</span>
+    </div>
+  </div>
+
+  <footer class="wrap">© <span id="year"></span> CodeNexa · Demonstração do sistema de agendamento da barbearia</footer>
+  <script>document.getElementById("year").textContent=new Date().getFullYear()</script>
+</body>
+</html>
