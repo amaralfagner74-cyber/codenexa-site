@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como o barbeiro usa o painel — Demonstração</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --background:#f6f0e6;--foreground:#221b12;--card:#fffdf8;
+      --primary:#b8732c;--primary-foreground:#fffdf8;
+      --muted:#ece3d2;--muted-foreground:#857a67;
+      --accent:#1d1811;--accent-foreground:#f6f0e6;
+      --border:#e3d7c4;--ring:#d9a44f;
+      --ok:#3f7d3a;--ok-bg:#e7f2e4;--danger:#b33a2b;--danger-bg:#fbeae7;
+      --info:#3d6d8f;--info-bg:#e6eef4;--warn:#b0732a;--warn-bg:#fbf0df;--gray:#6b6f76;--gray-bg:#eceef1;
+      --font-body:"Manrope",system-ui,sans-serif;
+      --font-display:"Bebas Neue","Manrope",system-ui,sans-serif;
+      --max:880px;
+    }
+    body{font-family:var(--font-body);color:var(--foreground);background:var(--background);line-height:1.6;-webkit-font-smoothing:antialiased}
+    .container{width:min(var(--max),calc(100% - 40px));margin:auto}
+    a{text-decoration:none}
+    header{background:var(--accent);color:var(--accent-foreground);padding:52px 0 46px}
+    .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#cba15f;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:6px 14px}
+    header h1{font-family:var(--font-display);font-size:clamp(34px,6vw,52px);font-weight:400;letter-spacing:.5px;line-height:1;margin:18px 0 14px}
+    header p{max-width:620px;color:rgba(246,240,230,.75);font-size:15px}
+    .cta{display:inline-flex;align-items:center;gap:10px;background:var(--primary);color:#fff;font-weight:800;font-size:14px;border-radius:12px;padding:13px 22px;margin-top:24px;transition:transform .15s,box-shadow .15s}
+    .cta:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(184,115,44,.35)}
+    .cta.second{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);margin-left:10px}
+    main{padding:52px 0 72px}
+    .overview{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:48px}
+    @media(min-width:720px){.overview{grid-template-columns:repeat(4,1fr)}}
+    .ov{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center}
+    .ov .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;font-size:14px}
+    .ov p{font-size:12px;font-weight:700;margin-top:8px}
+    .step{display:grid;gap:28px;margin:52px 0;align-items:center}
+    @media(min-width:900px){.step{grid-template-columns:1fr 1fr}.step.rev .num-block{order:2}}
+    .num-block h2{font-family:var(--font-display);font-size:30px;font-weight:400;letter-spacing:.5px;line-height:1}
+    .num-block p{font-size:14px;color:var(--muted-foreground);margin-top:8px}
+    .chip{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary);background:rgba(184,115,44,.1);border:1px solid rgba(184,115,44,.25);border-radius:999px;padding:4px 11px;margin-bottom:10px}
+    /* Mockup */
+    .mock{background:var(--accent);border-radius:26px;padding:22px;box-shadow:0 20px 50px rgba(29,24,17,.25)}
+    .mock .screen{background:#f7f3ea;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1)}
+    /* top bar mock */
+    .mtop{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--accent);color:#fff;border-radius:10px;padding:9px 12px;margin-bottom:12px}
+    .mtop .mb{display:flex;align-items:center;gap:7px;font-family:var(--font-display);letter-spacing:.4px;font-size:15px}
+    .mtop .mbr{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700}
+    .mtop .mav{width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:8px;font-weight:800}
+    .mbadge{font-size:9px;border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:2px 8px;color:rgba(255,255,255,.85)}
+    /* stats mock */
+    .mstats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+    .mstat{background:#fff;border:1px solid var(--border);border-radius:9px;padding:8px 6px;text-align:center}
+    .mstat small{display:block;font-size:8px;color:var(--muted-foreground);font-weight:700}
+    .mstat b{font-size:15px}
+    .mstat b.g{color:var(--ok)}.mstat b.r{color:var(--danger)}
+    /* appointment cards mock */
+    .mcard{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:11px;padding:9px 11px;margin:6px 0}
+    .mcard .mt{width:48px;flex-shrink:0;font-weight:800;font-size:14px}
+    .mcard .mt small{display:block;font-size:8px;color:var(--muted-foreground);font-weight:600}
+    .mcard .mbd{flex:1;min-width:0}
+    .mcard .mbd b{font-size:12px;display:block}
+    .mcard .mbd small{font-size:10px;color:var(--muted-foreground)}
+    .badge{font-size:9px;font-weight:800;border-radius:99px;padding:2px 8px;white-space:nowrap}
+    .b-conf{background:var(--info-bg);color:var(--info)}
+    .b-atend{background:var(--warn-bg);color:var(--warn)}
+    .b-conc{background:var(--ok-bg);color:var(--ok)}
+    .b-cancel{background:var(--danger-bg);color:var(--danger)}
+    .mactions{display:flex;gap:5px}
+    .mab{font-size:9px;font-weight:800;border:1px solid var(--border);background:#fff;border-radius:7px;padding:5px 9px;white-space:nowrap}
+    .mab.p{background:var(--primary);border-color:var(--primary);color:#fff}
+    .mab.d{color:var(--danger)}
+    .mab.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+    .mab.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+    /* summary mock */
+    .msum{background:#fff;border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px}
+    .msum h4{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted-foreground);margin-bottom:8px}
+    .mline{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid var(--border)}
+    .mline:last-child{border:0}
+    .mline b{font-weight:700}
+    .mline .p{color:var(--primary);font-weight:800}
+    .mbar{display:flex;align-items:center;gap:6px;margin:4px 0}
+    .mbar .nm{font-size:9px;width:84px;color:var(--muted-foreground);flex-shrink:0}
+    .mbar .tr{flex:1;height:8px;background:var(--muted);border-radius:99px;overflow:hidden}
+    .mbar .fl{height:100%;background:var(--primary)}
+    .mbar .ct{font-size:9px;font-weight:700;width:14px;text-align:right}
+    .demo-cta{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:34px;text-align:center;margin-top:16px}
+    .demo-cta h2{font-family:var(--font-display);font-size:34px;font-weight:400;letter-spacing:.5px}
+    .demo-cta p{color:var(--muted-foreground);font-size:14px;margin:10px auto 20px;max-width:520px}
+    .note{background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:12px 16px;font-size:13px;color:#713f12;margin-top:16px;text-align:left}
+    footer{background:var(--accent);color:rgba(246,240,230,.7);padding:22px 0;font-size:12px;text-align:center}
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <span class="kicker">Demonstração · Painel do Barbeiro</span>
+      <h1>Como o barbeiro usa o painel</h1>
+      <p>Veja como o profissional organiza o dia de trabalho: consulta a agenda, conduz cada atendimento e acompanha o resumo do faturamento — tudo em um só lugar.</p>
+      <a class="cta" href="painel-barbeiro.html">Experimentar o painel →</a>
+      <a class="cta second" href="agendamento.html">Ver página do cliente</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div class="overview">
+      <div class="ov"><span class="n">1</span><p>Entra no painel</p></div>
+      <div class="ov"><span class="n">2</span><p>Consulta a agenda</p></div>
+      <div class="ov"><span class="n">3</span><p>Atualiza o status</p></div>
+      <div class="ov"><span class="n">4</span><p>Acompanha o resumo</p></div>
+    </div>
+
+    <!-- Step 1 -->
+    <section class="step">
+      <div class="num-block">
+        <div>
+          <span class="chip">Etapa 1</span>
+          <h2>Entra e identifica o profissional</h2>
+          <p>Ao abrir o painel, o barbeiro se identifica no seletor no topo. Cada profissional tem a própria agenda.</p>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="screen">
+          <div class="mtop">
+            <span class="mb">✂ Corte &amp; Cia</span>
+            <span class="mbr"><span class="mav">RA</span> Rafael ▾</span>
+            <span class="mbadge">Demonstração</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted-foreground)">Painel do Barbeiro — acesse sua agenda de hoje, veja quem vai chegar e atualize cada atendimento.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="step rev">
+      <div class="num-block">
+        <div>
+          <span class="chip">Etapa 2</span>
+          <h2>Consulta a agenda do dia</h2>
+          <p>O painel mostra os agendamentos do dia em ordem de horário, com cliente, serviço, preço e o status de cada um.</p>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="screen">
+          <div class="mstats">
+            <div class="mstat"><small>Agendados</small><b>8</b></div>
+            <div class="mstat"><small>Concluídos</small><b class="g">2</b></div>
+            <div class="mstat"><small>Cancelados</small><b class="r">1</b></div>
+            <div class="mstat"><small>Faturamento</small><b>R$ 170</b></div>
+          </div>
+          <div class="mcard"><span class="mt">09:30</span><span class="mbd"><b>Carlos Mendes</b><small>✂ Corte Masculino · R$ 45</small></span><span class="badge b-conf">Confirmado</span></div>
+          <div class="mcard"><span class="mt">10:00</span><span class="mbd"><b>Lucas Rocha</b><small>✨ Corte + Barba · R$ 70</small></span><span class="badge b-conf">Confirmado</span></div>
+          <div class="mcard"><span class="mt">10:30</span><span class="mbd"><b>André Lima</b><small>🪮 Barba Completa · R$ 30</small></span><span class="badge b-cancel">Cancelado</span></div>
+          <div class="mcard"><span class="mt">11:00</span><span class="mbd"><b>João Pereira</b><small>✂ Corte Masculino · R$ 45</small></span><span class="badge b-conc">Concluído</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="step">
+      <div class="num-block">
+        <div>
+          <span class="chip">Etapa 3</span>
+          <h2>Atualiza o status do atendimento</h2>
+          <p>Com um toque, o barbeiro avança a situação: confirmar, iniciar, concluir — ou cancelar quando necessário. As estatísticas se atualizam na hora.</p>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="screen">
+          <div class="mcard"><span class="mt">11:30<small>30 min</small></span><span class="mbd"><b>Felipe Souza</b><small>✨ Corte + Barba · R$ 70</small></span><span class="badge b-atend">Em atendimento</span></div>
+          <div style="font-size:10px;color:var(--muted-foreground);margin:6px 0 2px">Ações disponíveis para este cliente:</div>
+          <div class="mactions">
+            <span class="mab ok">✓ Concluir</span>
+            <span class="mab d">✕ Cancelar</span>
+          </div>
+          <div style="font-size:10px;color:var(--muted-foreground);margin-top:12px">O botão principal avança a etapa conforme o andamento:</div>
+          <div class="mactions" style="margin-top:4px">
+            <span class="mab">Confirmar</span>
+            <span class="mab">Iniciar</span>
+            <span class="mab p">Concluir</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4 -->
+    <section class="step rev">
+      <div class="num-block">
+        <div>
+          <span class="chip">Etapa 4</span>
+          <h2>Acompanha o resumo do dia</h2>
+          <p>Ao lado da agenda, o barbeiro vê o resumo: total de atendimentos, faturamento dos concluídos e os serviços mais pedidos.</p>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="screen">
+          <div class="msum">
+            <h4>Resumo do dia</h4>
+            <div class="mline"><b>Total de agendamentos</b><span>8</span></div>
+            <div class="mline"><b>Concluídos</b><span>2</span></div>
+            <div class="mline"><b>Cancelados / faltas</b><span>1</span></div>
+            <div class="mline"><b>Faturamento do dia</b><span class="p">R$ 170</span></div>
+          </div>
+          <div class="msum">
+            <h4>Serviços mais pedidos</h4>
+            <div class="mbar"><span class="nm">Corte + Barba</span><span class="tr"><span class="fl" style="width:100%"></span></span><span class="ct">3</span></div>
+            <div class="mbar"><span class="nm">Corte Masculino</span><span class="tr"><span class="fl" style="width:67%"></span></span><span class="ct">2</span></div>
+            <div class="mbar"><span class="nm">Barba Completa</span><span class="tr"><span class="fl" style="width:33%"></span></span><span class="ct">1</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="demo-cta">
+      <h2>Teste o painel você mesmo</h2>
+      <p>Esta página é só uma demonstração visual. Clique abaixo para abrir o painel e experimentar mudar o status dos atendimentos interativamente.</p>
+      <a class="cta large" href="painel-barbeiro.html">Abrir o painel do barbeiro →</a>
+      <div class="note">
+        <strong>Obs.:</strong> demonstração com dados fictícios — os agendamentos e alterações não são salvos nem afetam o site real. O painel é o lado administrativo do mesmo sistema de agendamento.
+      </div>
+    </div>
+
+  </main>
+
+  <footer>CodeNexa · Demonstração do Painel do Barbeiro</footer>
+</body>
+</html>
+
+
