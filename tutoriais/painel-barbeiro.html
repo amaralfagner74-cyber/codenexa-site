@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Barbeiro — Demonstração</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --background:#f4eee2;--foreground:#221b12;--card:#fffdf8;
+      --primary:#b8732c;--primary-foreground:#fffdf8;
+      --muted:#ece3d2;--muted-foreground:#857a67;
+      --accent:#1d1811;--accent-foreground:#f6f0e6;
+      --border:#e0d4c0;--ring:#d9a44f;
+      --ok:#3f7d3a;--ok-bg:#e7f2e4;
+      --warn:#b0732a;--warn-bg:#fbf0df;
+      --danger:#b33a2b;--danger-bg:#fbeae7;
+      --info:#3d6d8f;--info-bg:#e6eef4;
+      --gray:#6b6f76;--gray-bg:#eceef1;
+      --font-body:"Manrope",system-ui,sans-serif;
+      --font-display:"Bebas Neue","Manrope",system-ui,sans-serif;
+    }
+    body{font-family:var(--font-body);color:var(--foreground);background:var(--background);line-height:1.5;-webkit-font-smoothing:antialiased}
+    button{font-family:var(--font-body);cursor:pointer}
+    /* Top bar */
+    .top{background:var(--accent);color:var(--accent-foreground);border-bottom:1px solid rgba(0,0,0,.2)}
+    .top-inner{max-width:1180px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand .mark{width:38px;height:38px;border-radius:11px;background:var(--primary);color:#fff;display:grid;place-items:center}
+    .brand h1{font-family:var(--font-display);font-size:24px;font-weight:400;letter-spacing:.5px;line-height:1}
+    .brand small{display:block;font-size:10px;opacity:.65;font-family:var(--font-body)}
+    .top-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .demo-badge{border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.85)}
+    .barber-select{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:7px 10px}
+    .barber-select .av{width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}
+    .barber-select select{background:transparent;border:0;color:#fff;font-family:var(--font-body);font-weight:700;font-size:13px;outline:none}
+    .barber-select select option{color:#221b12}
+    .view-demo{color:var(--accent-foreground);font-size:12px;font-weight:700;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.4)}
+    /* Layout */
+    .layout{max-width:1180px;margin:auto;padding:28px 20px 72px;display:grid;gap:24px}
+    @media(min-width:1024px){.layout{grid-template-columns:1fr 340px}}
+    /* Date heading */
+    .date-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .date-row h2{font-size:22px;letter-spacing:-.4px}
+    .date-row .today{font-size:13px;color:var(--muted-foreground)}
+    .new-booking{background:var(--primary);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:800;font-size:13px}
+    .new-booking:hover{filter:brightness(.95)}
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+    @media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
+    .stat .k{font-size:12px;font-weight:600;color:var(--muted-foreground)}
+    .stat .v{font-size:26px;font-weight:800;margin-top:4px;letter-spacing:-.5px}
+    .stat .v.green{color:var(--ok)}.stat .v.red{color:var(--danger)}
+    /* Filters */
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 12px}
+    .fchip{border:1px solid var(--border);background:var(--card);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:var(--muted-foreground)}
+    .fchip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+    /* Appointments */
+    .list{display:flex;flex-direction:column;gap:10px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start}
+    .time{width:64px;flex-shrink:0;font-weight:800;font-size:17px;color:var(--foreground)}
+    .time small{display:block;font-size:11px;color:var(--muted-foreground);font-weight:600}
+    .body{flex:1;min-width:0}
+    .body .client{font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .body .service{font-size:13px;color:var(--foreground);margin-top:2px}
+    .body .meta{display:flex;gap:14px;font-size:12px;color:var(--muted-foreground);margin-top:6px;flex-wrap:wrap}
+    .code{font-family:monospace;background:var(--muted);border-radius:6px;padding:1px 7px;font-size:11px}
+    .actions{display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+    .abtn{border:1px solid var(--border);background:#fff;border-radius:9px;padding:8px 13px;font-size:12px;font-weight:700;color:var(--foreground)}
+    .abtn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+    .abtn.danger{color:var(--danger);border-color:rgba(179,58,43,.3)}
+    .abtn:hover{filter:brightness(.96)}
+    .status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;border-radius:999px;padding:3px 11px}
+    .st-pendente{background:var(--gray-bg);color:var(--gray)}
+    .st-confirmado{background:var(--info-bg);color:var(--info)}
+    .st-atendimento{background:var(--warn-bg);color:var(--warn)}
+    .st-concluido{background:var(--ok-bg);color:var(--ok)}
+    .st-falta{background:var(--gray-bg);color:var(--gray)}
+    .st-cancelado{background:var(--danger-bg);color:var(--danger)}
+    .empty{background:var(--card);border:1px dashed var(--border);border-radius:16px;padding:30px;text-align:center;color:var(--muted-foreground);font-size:14px}
+    /* Sidebar summary */
+    .side{display:flex;flex-direction:column;gap:16px}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+    .panel h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted-foreground);margin-bottom:12px}
+    .rev-line{display:flex;align-items:center;justify-content:space-between;font-size:14px;padding:7px 0;border-bottom:1px solid var(--border)}
+    .rev-line:last-child{border-bottom:0}
+    .rev-line b{font-weight:700}
+    .rev-line .p{color:var(--primary);font-weight:800}
+    .rev-bar{margin-top:14px}
+    .rev-bar .row{display:flex;align-items:center;gap:10px;margin:8px 0}
+    .rev-bar .name{font-size:12px;width:92px;color:var(--muted-foreground);flex-shrink:0}
+    .rev-bar .track{flex:1;height:9px;background:var(--muted);border-radius:99px;overflow:hidden}
+    .rev-bar .fill{height:100%;background:var(--primary);border-radius:99px}
+    .rev-bar .cnt{font-size:11px;font-weight:700;width:20px;text-align:right}
+    .footnote{font-size:11px;color:var(--muted-foreground);background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:10px 12px}
+    /* Tabs */
+    .tabs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px}
+    .tab{border:1px solid var(--border);background:var(--card);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:800;color:var(--muted-foreground)}
+    .tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+    .tab-note{margin-left:auto;font-size:11px;color:var(--muted-foreground)}
+    /* Services editor */
+    .editor{background:var(--card);border:1px solid var(--ring);border-radius:16px;padding:16px;margin-bottom:14px}
+    .e-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:640px){.e-grid{grid-template-columns:repeat(2,1fr)}}
+    .e-label{font-size:11px;font-weight:700;color:var(--muted-foreground)}
+    .e-label input{width:100%;margin-top:5px;height:40px;border:1px solid var(--input);border-radius:9px;padding:0 12px;font-family:inherit;font-size:14px;color:var(--foreground);background:#fff}
+    .e-label input:focus{outline:none;border-color:var(--ring);box-shadow:0 0 0 3px rgba(217,164,79,.25)}
+    .e-actions{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+    .table{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+    .trow{display:grid;grid-template-columns:38px 1fr 96px 96px 120px;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)}
+    .trow:last-child{border-bottom:0}
+    .trow.thead{background:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-foreground)}
+    .trow input{width:100%;height:36px;border:1px solid var(--input);border-radius:8px;padding:0 10px;font-family:inherit;font-size:14px;color:var(--foreground);background:#fff}
+    .trow input:focus{outline:none;border-color:var(--ring);box-shadow:0 0 0 3px rgba(217,164,79,.2)}
+    .t-acts{display:flex;gap:6px;justify-content:flex-end}
+    .ticon{font-size:18px;text-align:center}
+    .savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;background:#eef0ff;border:1px solid #d9d6fe;border-radius:12px;padding:12px 16px;font-size:13px;color:#3b2fb0}
+    .hidden{display:none!important}
+    footer{max-width:1180px;margin:auto;padding:0 20px 30px;font-size:12px;color:var(--muted-foreground);text-align:center}
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <span class="mark">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+        </span>
+        <div>
+          <h1>Corte &amp; Cia</h1>
+          <small>Painel do Barbeiro</small>
+        </div>
+      </div>
+      <div class="top-right">
+        <span class="demo-badge">Demonstração</span>
+        <label class="barber-select">
+          <span class="av" id="av">RA</span>
+          <select id="barber"><option value="Rafael">Rafael</option><option value="Bruno">Bruno</option><option value="Diego">Diego</option><option value="Miguel">Miguel</option></select>
+        </label>
+        <a class="view-demo" href="agendamento.html">Ver página do cliente →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="tabs">
+        <button class="tab on" data-tab="agenda">Agenda</button>
+        <button class="tab" data-tab="servicos">Serviços e preços</button>
+        <span class="tab-note">Alterações valem nesta demonstração (sessão)</span>
+      </div>
+
+      <div id="view-agenda">
+      <div class="date-row">
+        <div>
+          <h2 id="dateTitle">Agenda de hoje</h2>
+          <div class="today" id="dateSub"></div>
+        </div>
+        <button class="new-booking" id="newB">+ Novo agendamento</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="k">Agendados hoje</div><div class="v" id="statTotal">0</div></div>
+        <div class="stat"><div class="k">Concluídos</div><div class="v green" id="statDone">0</div></div>
+        <div class="stat"><div class="k">Cancelados / faltas</div><div class="v red" id="statCancel">0</div></div>
+        <div class="stat"><div class="k">Faturamento concluído</div><div class="v" id="statRevenue">R$ 0</div></div>
+      </div>
+
+      <div class="filters" id="filters"></div>
+
+      <div class="list" id="list"></div>
+      </div>
+
+      <div id="view-servicos" class="hidden">
+        <div class="date-row">
+          <div>
+            <h2>Serviços e preços</h2>
+            <div class="today">Ajuste o valor e a duração de cada serviço da barbearia.</div>
+          </div>
+          <button class="new-booking" id="addService">+ Adicionar serviço</button>
+        </div>
+
+        <div id="serviceEditor" class="editor hidden">
+          <div class="e-grid">
+            <label class="e-label">Nome do serviço<input id="esName" type="text" placeholder="Ex.: Pigmentação"></label>
+            <label class="e-label">Preço (R$)<input id="esPrice" type="number" min="0" step="1" placeholder="40"></label>
+            <label class="e-label">Duração (min)<input id="esDuration" type="number" min="5" step="5" placeholder="30"></label>
+            <label class="e-label">Ícone (emoji)<input id="esIcon" type="text" maxlength="4" placeholder="💈"></label>
+            <div class="e-actions">
+              <button class="abtn primary" id="esSave">Salvar serviço</button>
+              <button class="abtn" id="esCancel">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table">
+          <div class="trow thead"><span class="ticon"></span><span>Serviço</span><span>Preço</span><span>Duração</span><span class="t-acts"></span></div>
+          <div id="serviceRows"></div>
+        </div>
+
+        <div id="saveBar" class="savebar hidden">
+          <span id="saveMsg"></span>
+          <button class="abtn primary" id="saveAll">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="side" id="side-agenda">
+      <div class="panel">
+        <h3>Resumo do dia</h3>
+        <div id="summary"></div>
+      </div>
+      <div class="panel">
+        <h3>Serviços mais pedidos</h3>
+        <div class="rev-bar" id="services"></div>
+      </div>
+      <div class="footnote">Esta é uma demonstração com dados fictícios. As alterações de status não são salvas e não afetam o site real.</div>
+    </aside>
+  </div>
+
+  <footer id="foot">Painel do Barbeiro · Demonstração CodeNexa</footer>
+
+  <script>
+    // ---------- Dados fictícios (demonstração) ----------
+    var STATUS = ["Pendente","Confirmado","Em atendimento","Concluído","Não compareceu","Cancelado"];
+    var CLIENTS = ["João Pereira","Carlos Mendes","Lucas Rocha","Felipe Souza","André Lima","Diego Costa","Marcos Silva","Thiago Nunes","Rafael Prado","Bruno Reis","Gustavo Faria","Igor Campos"];
+    var PHONES = ["(11) 98765-4321","(11) 91234-5678","(11) 99876-1234","(11) 98123-4567","(11) 97654-3210","(11) 91234-8765","(11) 98877-6655","(11) 95544-3322","(11) 97788-9900","(11) 94455-6677","(11) 93322-1100","(11) 91122-3344"];
+    var SERVICES = [
+      {name:"Corte Masculino",price:45,duration:30,icon:"✂"},
+      {name:"Barba Completa",price:30,duration:20,icon:"🪮"},
+      {name:"Corte + Barba",price:70,duration:50,icon:"✨"},
+      {name:"Sobrancelha",price:15,duration:10,icon:"🖌"},
+      {name:"Lavagem + Finalização",price:20,duration:15,icon:"💧"}
+    ];
+    function hash(n){var x=Math.sin(n*127.1+311.7)*43758.5453;return Math.floor((x-Math.floor(x))*1000)}
+    function pad(n){return String(n).padStart(2,"0")}
+    function genCode(){var a="ABCDEFGHJKMNPQRSTUVWXYZ23456789",o="";for(var i=0;i<5;i++)o+=a[Math.floor(Math.random()*a.length)];return "CN-"+o}
+    function money(v){return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+
+    // 10 atendimentos ao longo do dia
+    var TIMES=["09:00","09:30","10:00","10:30","11:00","11:30","14:00","14:30","15:00","15:30","16:00","16:30"];
+    var INITIAL=[];
+    for(var i=0;i<TIMES.length;i++){
+      var sv=SERVICES[hash(i*7+1)%SERVICES.length];
+      var st=i<5?STATUS[1]:STATUS[0];
+      if(i===2)st="Concluído";
+      if(i===6)st="Em atendimento";
+      if(i===9)st="Cancelado";
+      if(i===4)st="Concluído";
+      INITIAL.push({id:i,time:TIMES[i],client:CLIENTS[i%CLIENTS.length],phone:PHONES[i%PHONES.length],service:sv,code:genCode(),status:st});
+    }
+    var appointments=INITIAL.slice();
+    var filter="Todos";
+
+    // ---------- Render ----------
+    function statusClass(s){
+      var map={Pendente:"st-pendente",Confirmado:"st-confirmado","Em atendimento":"st-atendimento",Concluído:"st-concluido","Não compareceu":"st-falta",Cancelado:"st-cancelado"};
+      return map[s]||"st-pendente";
+    }
+    function stats(){
+      var total=appointments.length, done=0, cancel=0, rev=0;
+      appointments.forEach(function(a){
+        if(a.status==="Concluído"){done++;rev+=a.service.price}
+        if(a.status==="Cancelado"||a.status==="Não compareceu")cancel++;
+      });
+      return {total:total,done:done,cancel:cancel,rev:rev};
+    }
+
+    function renderStats(){
+      var s=stats();
+      document.getElementById("statTotal").textContent=s.total;
+      document.getElementById("statDone").textContent=s.done;
+      document.getElementById("statCancel").textContent=s.cancel;
+      document.getElementById("statRevenue").textContent=money(s.rev);
+    }
+
+    function renderFilters(){
+      var el=document.getElementById("filters");
+      var counts={Todos:appointments.length};
+      STATUS.forEach(function(st){counts[st]=appointments.filter(function(a){return a.status===st}).length});
+      var html="";
+      ["Todos"].concat(STATUS).forEach(function(f){
+        var on=f===filter?"on":"";
+        html+='<button class="fchip '+on+'" data-f="'+esc(f)+'">'+esc(f)+' ('+counts[f]+')</button>';
+      });
+      el.innerHTML=html;
+      el.querySelectorAll(".fchip").forEach(function(b){b.addEventListener("click",function(){filter=b.dataset.f;render()})});
+    }
+
+    function nextStatus(s){
+      var i=STATUS.indexOf(s);
+      return STATUS[Math.min(i+1,STATUS.length-1)];
+    }
+    function primaryLabel(s){
+      if(s==="Pendente")return "Confirmar";
+      if(s==="Confirmado")return "Iniciar";
+      if(s==="Em atendimento")return "Concluir";
+      if(s==="Concluído")return "Reabrir";
+      return "Voltar p/ pendente";
+    }
+    function primaryNext(s){
+      if(s==="Pendente")return "Confirmado";
+      if(s==="Confirmado")return "Em atendimento";
+      if(s==="Em atendimento")return "Concluído";
+      return "Pendente";
+    }
+
+    function renderList(){
+      var el=document.getElementById("list");
+      var list=appointments;
+      if(filter!=="Todos")list=list.filter(function(a){return a.status===filter});
+      list.sort(function(a,b){return a.time<b.time?-1:a.time>b.time?1:0});
+      if(!list.length){el.innerHTML='<div class="empty">Nenhum agendamento aqui. Altere o filtro acima.</div>';return}
+      var html="";
+      list.forEach(function(a){
+        html+='<div class="card" data-id="'+a.id+'">';
+        html+='<div class="time">'+a.time+'<small>'+a.service.duration+' min</small></div>';
+        html+='<div class="body">';
+        html+='<div class="client">'+esc(a.client)+' <span class="status '+statusClass(a.status)+'">'+esc(a.status)+'</span></div>';
+        html+='<div class="service">'+a.service.icon+' '+esc(a.service.name)+' · '+money(a.service.price)+'</div>';
+        html+='<div class="meta"><span>📞 '+esc(a.phone)+'</span><span class="code">'+esc(a.code)+'</span></div>';
+        html+='</div>';
+        html+='<div class="actions">';
+        html+='<button class="abtn primary" data-act="advance">'+primaryLabel(a.status)+'</button>';
+        if(a.status!=="Cancelado"&&a.status!=="Concluído"){
+          html+='<button class="abtn danger" data-act="cancel">Cancelar</button>';
+        }
+        html+='</div></div>';
+      });
+      el.innerHTML=html;
+      el.querySelectorAll("[data-act]").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          var id=+btn.closest(".card").dataset.id;
+          var app=appointments.find(function(a){return a.id===id});
+          if(btn.dataset.act==="advance")app.status=primaryNext(app.status);
+          else app.status="Cancelado";
+          render();
+        });
+      });
+    }
+
+    function renderSummary(){
+      var s=stats();
+      var el=document.getElementById("summary");
+      el.innerHTML=
+        revRow("Total de agendamentos",s.total,"")+
+        revRow("Concluídos",s.done,"")+
+        revRow("Cancelados / faltas",s.cancel,"")+
+        revRow("Faturamento do dia",money(s.rev),"p");
+    }
+    function revRow(l,v,cls){
+      return '<div class="rev-line"><b>'+l+'</b><span class="'+cls+'">'+v+'</span></div>';
+    }
+
+    function renderServices(){
+      var el=document.getElementById("services");
+      var counts={};
+      appointments.forEach(function(a){counts[a.service.name]=(counts[a.service.name]||0)+1});
+      var arr=Object.keys(counts).map(function(k){return{name:k,c:counts[k]}}).sort(function(a,b){return b.c-a.c});
+      var max=arr.length?arr[0].c:1;
+      var html="";
+      arr.forEach(function(r){
+        html+='<div class="row"><span class="name">'+esc(r.name)+'</span><span class="track"><span class="fill" style="width:'+(r.c/max*100)+'%"></span></span><span class="cnt">'+r.c+'</span></div>';
+      });
+      el.innerHTML=html||'<div style="font-size:12px;color:var(--muted-foreground)">Sem dados.</div>';
+    }
+
+    function render(){
+      renderStats();renderFilters();renderList();renderSummary();renderServices();
+    }
+
+    function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+
+    // ---------- Abas: Agenda / Serviços ----------
+    var catalog=SERVICES.map(function(s,i){return{id:i,name:s.name,price:s.price,duration:s.duration,icon:s.icon}});
+    var tab="agenda";
+    function setTab(t){
+      tab=t;
+      document.querySelectorAll(".tab").forEach(function(b){b.classList.toggle("on",b.dataset.tab===t)});
+      document.getElementById("view-agenda").classList.toggle("hidden",t!=="agenda");
+      document.getElementById("view-servicos").classList.toggle("hidden",t!=="servicos");
+      document.getElementById("side-agenda").classList.toggle("hidden",t!=="agenda");
+      if(t==="servicos")renderCatalog();
+    }
+    document.querySelectorAll(".tab").forEach(function(b){b.addEventListener("click",function(){setTab(b.dataset.tab)})});
+
+    function renderCatalog(){
+      var el=document.getElementById("serviceRows");
+      var html="";
+      catalog.forEach(function(s,i){
+        html+='<div class="trow">';
+        html+='<span class="ticon">'+esc(s.icon)+'</span>';
+        html+='<input data-k="name" data-i="'+i+'" value="'+esc(s.name)+'">';
+        html+='<input data-k="price" data-i="'+i+'" type="number" min="0" value="'+s.price+'">';
+        html+='<input data-k="duration" data-i="'+i+'" type="number" min="5" step="5" value="'+s.duration+'">';
+        html+='<span class="t-acts"><button class="abtn danger" data-remove="'+i+'">Remover</button></span>';
+        html+='</div>';
+      });
+      el.innerHTML=html;
+      el.querySelectorAll("input[data-k]").forEach(function(inp){
+        inp.addEventListener("input",function(){
+          var i=+inp.dataset.i,k=inp.dataset.k;
+          catalog[i][k]= (k==="price"||k==="duration") ? (+inp.value||0) : inp.value;
+          showSave("Você alterou os valores. Clique em salvar para aplicar.");
+        });
+      });
+      el.querySelectorAll("[data-remove]").forEach(function(b){
+        b.addEventListener("click",function(){
+          catalog.splice(+b.dataset.remove,1);
+          renderCatalog();
+          showSave("Você removeu um serviço. Clique em salvar para confirmar.");
+        });
+      });
+    }
+
+    function showSave(msg){
+      document.getElementById("saveMsg").textContent=msg;
+      document.getElementById("saveBar").classList.remove("hidden");
+    }
+    document.getElementById("saveAll").addEventListener("click",function(){
+      document.getElementById("saveMsg").textContent="✓ Alterações aplicadas nesta demonstração (valem só nesta sessão).";
+      setTimeout(function(){document.getElementById("saveBar").classList.add("hidden")},2200);
+    });
+    document.getElementById("addService").addEventListener("click",function(){
+      document.getElementById("serviceEditor").classList.remove("hidden");
+    });
+    document.getElementById("esCancel").addEventListener("click",function(){
+      document.getElementById("serviceEditor").classList.add("hidden");
+    });
+    document.getElementById("esSave").addEventListener("click",function(){
+      var name=document.getElementById("esName").value.trim();
+      var price=+document.getElementById("esPrice").value;
+      var dur=+document.getElementById("esDuration").value;
+      var icon=document.getElementById("esIcon").value||"💈";
+      if(!name||!price){alert("Informe ao menos o nome e o preço do serviço.");return}
+      catalog.push({id:catalog.length,name:name,price:price,duration:dur||30,icon:icon});
+      renderCatalog();
+      showSave("Novo serviço adicionado. Clique em salvar para confirmar.");
+      document.getElementById("serviceEditor").classList.add("hidden");
+      ["esName","esPrice","esDuration","esIcon"].forEach(function(id){document.getElementById(id).value=""});
+    });
+
+    // ---------- Init ----------
+    var now=new Date();
+    var barberSel=document.getElementById("barber");
+    document.getElementById("dateTitle").textContent="Agenda de hoje";
+    document.getElementById("dateSub").textContent=
+      now.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"})+" · "+barberSel.value;
+    barberSel.addEventListener("change",function(){
+      document.getElementById("dateSub").textContent=
+        now.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"})+" · "+barberSel.value;
+      document.getElementById("av").textContent=barberSel.value.slice(0,2).toUpperCase();
+    });
+    document.getElementById("av").textContent="RA";
+    document.getElementById("newB").addEventListener("click",function(){
+      alert("Em um sistema real, aqui você abriria um formulário para criar um novo agendamento (dados fictícios de demonstração).");
+    });
+    render();
+  </script>
+</body>
+</html>
