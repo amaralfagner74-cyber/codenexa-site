@@ -257,7 +257,7 @@
 
     function availableSlots(){
       var d=curDay();if(!d)return[];
-      var raw=s.barberId==="any"?d.anySlots:(d.slots[state.barberId||""]||[]);
+      var raw=state.barberId==="any"?d.anySlots:(d.slots[state.barberId||""]||[]);
       if(!d.isToday)return raw;
       var now=new Date(),nm=now.getHours()*60+now.getMinutes();
       return raw.filter(function(t){var p=t.split(":");return (+p[0])*60+(+p[1])>=nm});
